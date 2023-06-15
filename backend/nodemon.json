@@ -1,0 +1,8 @@
+{
+  "restartable": "rs",
+  "watch": ["lib", "main.ts"],
+  "ignore_watch": ["node_modules", "pages"],
+  "exec": "tsx main.ts",
+  "ext": "ts json js",
+  "delay": 800
+}
