@@ -12,7 +12,7 @@
     </a-space>
   </div>
   <a-space :size="[50, 0]" class="query-time-space">
-    <div class="query-time">查询时间 {{ time }} s</div>
+    <div class="query-time">查询时间 {{ queryTime }} s</div>
   </a-space>
   <a-list class="result" :data="dataSource" :pagination-props="pagination">
     <template #item="{ item, index }">
@@ -63,14 +63,16 @@ const pagination: ComputedRef<PaginationProps> = computed(() => ({
   showTotal: true,
   total: dataSource.value.length,
 }))
-const time = ref(NaN)
+const queryTime = ref(NaN)
 const failureData = ref<string[]>([])
 const failureQuery = (query: string) => {
   emit('failure-query', query)
 }
 const queryKeyWord = async (query: string) => {
   try {
-    const { data } = await axios({
+    const {
+      data: { code, words, data, time },
+    } = await axios({
       url: 'api/query',
       method: 'post',
       data: {
@@ -78,25 +80,26 @@ const queryKeyWord = async (query: string) => {
       },
       timeout: 1000,
     })
-    console.log(`查询:：${query}`, data)
-    time.value = data.time
-    if (data.code == 1) {
+    console.log(`查询：${query}`, code, time, data)
+    queryTime.value = time
+    if (code == 1) {
       Message.success({
         content: '查询成功',
         duration: 1000,
       })
       // 结果中高亮query
-      dataSource.value = (data.data as Article[]).map((article) => {
+      const reg = new RegExp('[' + words.join('|') + ']', 'g')
+      dataSource.value = (data as Article[]).map((article) => {
         return {
           ...article,
           ...{
             title: article.title.replaceAll(
-              query,
-              `<span style="background-color:#ffff00">${query}</span>`
+              reg,
+              (e) => `<span style="background-color:#ffff00">${e}</span>`
             ),
             content: article.content.replaceAll(
-              query,
-              `<span style="background-color:#ffff00">${query}</span>`
+              reg,
+              (e) => `<span style="background-color:#ffff00">${e}</span>`
             ),
           },
         }
@@ -108,7 +111,7 @@ const queryKeyWord = async (query: string) => {
         content: '查询失败',
         duration: 1000,
       })
-      failureData.value = data.data
+      failureData.value = data
       dataSource.value = []
     }
   } catch (err) {

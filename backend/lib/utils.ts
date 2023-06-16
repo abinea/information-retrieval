@@ -5,11 +5,15 @@ export function isChinese(word: string): boolean {
   return /[\u4e00-\u9fa5]+/.test(word)
 }
 
+export function isEnglish(word: string): boolean {
+  return /[a-zA-Z-]+/.test(word)
+}
+
 // 读取pages文件夹下的所有文件
-export function readDocs(n: number = 1000): string[] {
+export function readDocs(): string[] {
   const pagesPath = path.resolve(__dirname, '../pages')
   try {
-    const files = fs.readdirSync(pagesPath).slice(0, n)
+    const files = fs.readdirSync(pagesPath)
     return files.map((filename) =>
       fs.readFileSync(path.resolve(pagesPath, filename), 'utf-8')
     )

@@ -22,9 +22,9 @@ router.post('/api/query', (req, res) => {
   const start = Date.now()
   const body = engine.search(query)
   const end = Date.now()
-  res.json({ ...body, time: ((end - start) / 1000).toFixed(2) })
+  res.json({ ...body, time: (end - start) / 1000 })
 })
 
 app.listen(3000, '127.0.0.1', () => {
-  console.log('Server listening on port 3000!')
+  console.log('server listening on port 3000!')
 })
