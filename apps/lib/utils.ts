@@ -11,7 +11,9 @@ export function isEnglish(word: string): boolean {
 
 // 读取pages文件夹下的所有文件
 export function readDocs(): string[] {
-  const pagesPath = path.resolve(__dirname, '../pages')
+  console.log(__dirname)
+  const pagesPath = path.resolve(__dirname, '../../pages')
+  console.log(pagesPath)
   try {
     const files = fs.readdirSync(pagesPath)
     return files.map((filename) =>
@@ -100,4 +102,11 @@ export function handleDocs(docs: string) {
     }
   }
   return { url, title, content }
+}
+
+export function logTime(name: string, cb: Function) {
+  console.time(name)
+  let result = cb()
+  console.timeEnd(name)
+  return result
 }

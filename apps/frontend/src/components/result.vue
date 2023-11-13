@@ -12,7 +12,7 @@
     </a-space>
   </div>
   <a-space :size="[50, 0]" class="query-time-space">
-    <div class="query-time">查询时间 {{ queryTime }} s</div>
+    <div class="query-time">查询时间 {{ queryTime / 1e6 }} ms</div>
   </a-space>
   <a-list class="result" :data="dataSource" :pagination-props="pagination">
     <template #item="{ item, index }">

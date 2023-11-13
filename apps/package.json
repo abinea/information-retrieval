@@ -1,0 +1,23 @@
+{
+  "name": "information-retrieval",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve":"cd frontend/ && npx vite",
+    "serve:node": "cd backend && npx nodemon",
+    "serve:bun": "bun run --watch backend-bun/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@node-rs/jieba": "^1.7.0",
+    "stemmer": "^2.0.1",
+    "typescript": "^5.1.3"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  }
+}

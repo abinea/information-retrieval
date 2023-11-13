@@ -5,13 +5,14 @@ import {
   calcEditDistance,
   topK,
   isEnglish,
+  logTime,
 } from './utils'
 import jieba from '@node-rs/jieba'
 import { stemmer } from 'stemmer'
 
 class Engine {
   // 文档集合
-  docs: string[]
+  docs: string[] = []
   // 词项集合（无重复）
   wordSet: Set<string> = new Set()
   // 倒排索引表 word => [docId]
@@ -25,41 +26,42 @@ class Engine {
 
   constructor() {
     // 从pages读取文档
-    console.time('readDocs')
-    this.docs = readDocs()
+    logTime('readDocs', () => {
+      this.docs = readDocs()
+    })
     // 构建索引表
-    console.timeEnd('readDocs')
-    console.time('buildIndexedMap')
-    this.buildIndexedMap()
-    console.timeEnd('buildIndexedMap')
+    logTime('buildIndexedMap', () => {
+      this.buildIndexedMap()
+    })
+
     // 初始化 tfIdfMap和tfIdfMatrix，供搜索时计算使用
-    console.time('calcTfIdf')
-    this.calcTfIdf()
-    console.timeEnd('calcTfIdf')
+    logTime('calcTfIdf', () => {
+      this.calcTfIdf()
+    })
   }
   // 查询函数 ！
   search(query: string) {
-    console.time('query')
-    const { cosineSimilarity, queryWords: words } =
-      this.calcCosineSimilarity(query)
-    let code = 1,
-      data = []
-    const similarity = Array.from(cosineSimilarity.entries())
-    if (similarity.length === 0) {
-      data = this.errorCorrection(query).slice(0, 3)
-      code = 0
-    } else {
-      const res = topK(similarity, 10)
-      const docs = res.map((item) => this.docs[item[0]])
-      data = docs.map((item) => handleDocs(item))
-    }
-    console.timeEnd('query')
+    return logTime('query', () => {
+      const { cosineSimilarity, queryWords: words } =
+        this.calcCosineSimilarity(query)
+      let code = 1,
+        data = []
+      const similarity = Array.from(cosineSimilarity.entries())
+      if (similarity.length === 0) {
+        data = this.errorCorrection(query).slice(0, 3)
+        code = 0
+      } else {
+        const res = topK(similarity, 10)
+        const docs = res.map((item) => this.docs[item[0]])
+        data = docs.map((item) => handleDocs(item))
+      }
 
-    return {
-      code,
-      data,
-      words,
-    }
+      return {
+        code,
+        data,
+        words,
+      }
+    })
   }
   // 纠错
   errorCorrection(query: string): string[] {
